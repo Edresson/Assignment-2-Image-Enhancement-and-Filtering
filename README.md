@@ -1,19 +1,18 @@
-# DIP Assignment Example
+# Assignment 2 
 
 Image Processing - scc0251. 
 
-Assignment 1 - Image enhancemenet
+Assignment 2:  Image Enhancement and Filtering
 
 Authors:
-* Moacir A. Ponti
-* Gabriel B. Cavallari
-* Vinícius M. da Costa
+* Edresson Casanova
+* Pedro Rocha
 
 
 Folders and files:
-* [Python code](./submission/dip01_submission.py) contains the Python code used for run.codes submission
+* [Python code](./submission/dip02_submission.py) contains the Python code used for run.codes submission
 * [Images](/images) contains images used in the demos
-* [Notebook with Demo](dip01-enhancement.ipynb) is a notebook exemplifying functions developed and submitted
+* [Notebook with Demo](dip02-enhancement.ipynb) is a notebook exemplifying functions developed and submitted
 
 
 
