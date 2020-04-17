@@ -1,8 +1,8 @@
 # Assignment 2 
 
-Image Processing - scc0251. 
+Image Processing - SCC5830. 
 
-Assignment 2:  Image Enhancement and Filtering
+Assignment 2: Image Enhancement and Filtering
 
 Authors:
 * Edresson Casanova
