@@ -13,13 +13,15 @@ Autors Infos:
         Year: 1º year
 
     Program: Computer Science and Computational Mathematics
-    
+
 Assignment 2:  Image Enhancement and Filtering
+
+Git Repository: https://github.com/Edresson/Assignment-2-Image-Enhancement-and-Filtering
 """
 import imageio # improt imageio library
 import numpy as np # import numpy library
 
-
+# Utils Functions
 def RSE(imgA,imgB): 
     """This function calculate Root Squared Error between Image A and Image B
     Parameters:
@@ -102,7 +104,7 @@ def convolve(r, N, k):
                             #print(aux)
     return m
 
-
+# Method 1
 def bilateral_filter(input_img, n, sigma_s, sigma_r):
     '''This Function implement the bilateral filter. The Bilateral Filter 
         is a nonlinear filtering technique to smooth images while 
@@ -158,6 +160,7 @@ def bilateral_filter(input_img, n, sigma_s, sigma_r):
     output_img = unpad(output_img, pad_len)
     return output_img
 
+# Method 2
 def unsharp_mask_laplacian(input_img, c, kernel):
     '''
     This function performs an operation that tries to enhance edges and transitions of intensities. The
@@ -197,8 +200,42 @@ version of an image from the original image.
     #output_img = unpad(output_img, pad_len)
     return out
 
-def vignette_filter(sigma_row, sigma_col):
-    pass
+# Method 3
+def vignette_filter(input_img, sigma_row, sigma_col):
+    '''This Function implement the Vignette filter. The vignette filter consists in a gaussian centred in the image, with different values
+of standard deviation.         
+    '''
+    img_shape = input_img.shape
+    Wrow = np.zeros((img_shape[0],))
+    Wcol = np.zeros((img_shape[1],))
+
+    # get points for Wrow
+    for i in range(img_shape[0]): 
+        x = int(-(img_shape[0]-1)/2)+i
+        Wrow[i] = x 
+    # get points for Wcol
+    for i in range(img_shape[1]): 
+        x = int(-(img_shape[1]-1)/2)+i
+        Wcol[i] = x
+
+    # get filters with kernel gaussian transformation
+    Wrow = gaussian_kernel(Wrow, sigma_row).astype(np.float)
+    Wcol = gaussian_kernel(Wcol, sigma_col).astype(np.float)
+
+    # transpose the kernel referent to the columns (in order to obtain a column vector)
+    Wcol = Wcol.reshape(1, -1)
+    Wrow = Wrow.reshape(-1, 1)
+
+    # multiply it (matrix product) by the kernel referent to the rows, such that the result array should be the same shape as the input image.
+    W = np.multiply(Wcol,Wrow)
+
+    # applying filter in input image
+    output_img = np.multiply(input_img.astype(np.float), W)
+
+    # normalizing output image between 0 and 255
+    output_img = np.multiply((output_img - output_img.min()),(1/(output_img.max() - output_img.min()) * 255)).astype(np.uint8) 
+    
+    return output_img
 
 def main(): 
     filename = str(input()).rstrip() # input filename
@@ -220,7 +257,7 @@ def main():
     if method == 3: #if method 3
         sigma_row = float(input())
         sigma_col = float(input())
-        output_img = vignette_filter(sigma_row, sigma_col)
+        output_img = vignette_filter(input_img,sigma_row, sigma_col)
     
     if save == 1: #if save parameter
         imageio.imwrite('output_img.png',output_img) # save output image
