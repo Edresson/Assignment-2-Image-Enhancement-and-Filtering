@@ -7,10 +7,10 @@ Autors Infos:
         Course: SCC5830-3/3 
         Year: 1º year
 
-    Name: Pedro Rocha    
-        USP Number: 
+    Name: Pedro Regattieri Rocha    
+        USP Number: 8531702
         Course: SCC5830-3/3 
-        Year: 
+        Year: 1º year
 
     Program: Computer Science and Computational Mathematics
     
@@ -52,6 +52,56 @@ def gaussian_kernel(fil, sig):
         sig: is the sigma
     '''
     return (1.0 / ( 2 *np.pi * (sig ** 2))) * np.exp(- (np.square(fil) / (2 *  (sig ** 2))))
+	
+def laplacian_kernel(kernel):
+    '''This function returns the proper kernel for use in the laplacian filter 
+    '''
+    if(kernel == 1):
+        k = np.array([0, -1, 0, -1, 4, -1, 0, -1, 0]).reshape((3,3))
+    else: 
+        k = np.array([-1, -1, -1, -1, 8, -1, -1, -1, -1]).reshape((3,3))
+    return k
+
+def minmax(image):
+    '''returns the minimum and maximum values in a image'''
+    N = len(image)
+    a = 9999
+    b = -9999
+    for i in range (0,N):
+        for j in range(0, N):
+            if (image[i][j] < a):
+                a = image[i][j]
+            if (image[i][j] > b):
+                b = image[i][j]
+    return a, b
+
+def normalization(I):
+    #normalizes the image I
+    min, max = minmax(I)
+    N = len(I)
+    m = np.zeros((N,N), dtype=int)#(dtype=int, shape=(N,N))
+    for i in range (0,N):
+        for j in range(0, N):
+            aux = ((I[i][j] - min) * 255)/(max - min)
+            m[i][j] = aux
+    return m
+
+def convolve(r, N, k):
+    #Convolves the padded image r with the chosen kernel k
+    m = np.zeros((N, N), dtype=int)
+    for i in range(0, N): #N+1
+        for j in range(0, N):
+            aux = 0
+            for a in range(0, 3):
+                for b in range(0, 3):
+                    #if (i == j == 0) or (i == j == N-1):
+                            #print(r[i+a][j+b], '*', k[a][b], '=', r[i+a][j+b]*k[a][b])
+                    aux = aux + (r[i+a][j+b]*k[a][b]) #-1
+            m[i][j] = aux #-1
+            #if (i == j == 0) or (i == j == N-1):
+                            #print(aux)
+    return m
+
 
 def bilateral_filter(input_img, n, sigma_s, sigma_r):
     '''This Function implement the bilateral filter. The Bilateral Filter 
@@ -109,7 +159,43 @@ def bilateral_filter(input_img, n, sigma_s, sigma_r):
     return output_img
 
 def unsharp_mask_laplacian(input_img, c, kernel):
-    pass
+    '''
+    This function performs an operation that tries to enhance edges and transitions of intensities. The
+unsharp mask filtering is a sharpening technique that subtracts an unsharp or blurred
+version of an image from the original image.
+    '''
+    k = laplacian_kernel(kernel)
+    r = input_img.copy()
+    input_img = np.pad(input_img, 1, mode = 'constant', constant_values = 0)
+    N = len(r)# size of the image
+    f = np.zeros((N,N), dtype = float)
+    If = np.zeros((N,N), dtype = float)
+    out = np.zeros((N,N), dtype = int)
+    #STEP 1 - Convolving the input_image with the kernel k
+    cnv = convolve(input_img, N, k)
+    #print(cnv)
+    #print(cnv[N-1][N-1])
+    
+    #STEP 2 - Scaling the filtered image
+    If = normalization(cnv)
+    #print(If)
+    
+    
+    #STEP 3 - Adding the filtered image to the original, input_image (copied to r)
+    for i in range (0,N):
+        for j in range(0, N):
+            aux = (If[i][j]*c) + r[i][j]
+            f[i][j] = aux
+    #print(f)
+    
+    #STEP 4 - Filtering the final image into output_img
+    out = normalization(f)
+    #print(output_img)
+    
+    
+    #unpad image
+    #output_img = unpad(output_img, pad_len)
+    return out
 
 def vignette_filter(sigma_row, sigma_col):
     pass
